@@ -14,9 +14,9 @@ processes:
     restart: always
     readiness_probe:
       exec:
-        command: sh -c "docker exec ollama ollama list >/dev/null 2>&1"
+        command: sh -c "curl -s http://localhost:11434/api/tags"
       interval: 2s
-      retries: 30
+      retries: 60
 
   ensure-models:
     depends_on:
@@ -39,7 +39,7 @@ processes:
             -p 3000:8080 \
             -e OLLAMA_BASE_URL=http://ollama:11434 \
             -v openwebui_data:/app/backend/data \
-            ghcr.io/open-webui/open-webui:main
+            'ghcr.io/open-webui/open-webui:main'
       "
     restart: always
 
