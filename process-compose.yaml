@@ -1,0 +1,44 @@
+processes:
+  ollama:
+    command: >
+      sh -c "
+          docker rm -f ollama >/dev/null 2>&1 || true &&
+          docker run --rm \
+            --name ollama \
+            --network ollama-net \
+            --gpus all \
+            -p 11434:11434 \
+            -v ollama_data:/root/.ollama \
+            ollama/ollama:latest
+      "
+    restart: always
+    readiness_probe:
+      exec:
+        command: sh -c "docker exec ollama ollama list >/dev/null 2>&1"
+      interval: 2s
+      retries: 30
+
+  ensure-models:
+    depends_on:
+      ollama:
+        condition: process_healthy
+    command: bash ./scripts/ensure-models.sh
+    restart: "no"
+
+  openwebui:
+    depends_on:
+      ollama:
+        condition: process_healthy
+    command: >
+      sh -c "
+          docker rm -f open-webui >/dev/null 2>&1 || true && 
+          docker run --rm \
+            --name open-webui \
+            --network ollama-net \
+            -p 3000:8080 \
+            -e OLLAMA_BASE_URL=http://ollama:11434 \
+            -v openwebui_data:/app/backend/data \
+            ghcr.io/open-webui/open-webui:main
+      "
+    restart: always
+
