@@ -35,6 +35,7 @@ processes:
           docker run --rm \
             --name open-webui \
             --network ollama-net \
+            --no-healthcheck \
             -p 3000:8080 \
             -e OLLAMA_BASE_URL=http://ollama:11434 \
             -v openwebui_data:/app/backend/data \
