@@ -10,7 +10,22 @@ has_amd_devices() {
 }
 
 has_nvidia_devices() {
-  [[ -e /dev/nvidiactl || -d /proc/driver/nvidia ]]
+  # Classic Linux NVIDIA device nodes.
+  if [[ -e /dev/nvidiactl || -d /proc/driver/nvidia ]]; then
+    return 0
+  fi
+
+  # WSL often exposes NVIDIA through nvidia-smi + /dev/dxg only.
+  if command -v nvidia-smi >/dev/null 2>&1 && nvidia-smi -L >/dev/null 2>&1; then
+    return 0
+  fi
+
+  # If Docker has an NVIDIA runtime configured, prefer GPU mode in auto.
+  if docker info --format '{{json .Runtimes}}' 2>/dev/null | grep -q '"nvidia"'; then
+    return 0
+  fi
+
+  return 1
 }
 
 select_mode() {

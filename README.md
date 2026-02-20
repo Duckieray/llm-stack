@@ -40,7 +40,7 @@ This starts:
 
 GPU mode is auto-detected by default:
 - AMD/ROCm when `/dev/kfd` + `/dev/dri` exist (uses `ollama/ollama:rocm`)
-- NVIDIA when NVIDIA devices are present (uses `--gpus all`)
+- NVIDIA when NVIDIA devices, `nvidia-smi`, or Docker `nvidia` runtime are detected (uses `--gpus all`)
 - CPU fallback otherwise
 
 You can force a mode:
@@ -56,6 +56,10 @@ The stack also auto-pulls these models at startup (see `scripts/ensure-models.sh
 - `qwen3-coder:30b`
 - `hermes3`
 - `JollyLlama/GLM-Z1-32B-0414-Q4_K_M`
+
+Open WebUI is also auto-configured at startup to keep Ollama enabled
+(see `scripts/ensure-openwebui-config.sh`), which prevents the
+`No models found` issue after restarts.
 
 ## Useful commands
 

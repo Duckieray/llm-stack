@@ -34,3 +34,15 @@ processes:
             'ghcr.io/open-webui/open-webui:main'
       "
     restart: always
+    readiness_probe:
+      exec:
+        command: sh -c "curl -s http://localhost:3000/health"
+      interval: 2s
+      retries: 60
+
+  ensure-openwebui-config:
+    depends_on:
+      openwebui:
+        condition: process_healthy
+    command: bash ./scripts/ensure-openwebui-config.sh
+    restart: "no"
