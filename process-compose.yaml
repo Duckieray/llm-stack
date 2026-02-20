@@ -1,16 +1,6 @@
 processes:
   ollama:
-    command: >
-      sh -c "
-          docker rm -f ollama >/dev/null 2>&1 || true &&
-          docker run --rm \
-            --name ollama \
-            --network ollama-net \
-            --gpus all \
-            -p 11434:11434 \
-            -v ollama_data:/root/.ollama \
-            ollama/ollama:latest
-      "
+    command: bash ./scripts/run-ollama.sh
     restart: always
     readiness_probe:
       exec:
@@ -44,4 +34,3 @@ processes:
             'ghcr.io/open-webui/open-webui:main'
       "
     restart: always
-
