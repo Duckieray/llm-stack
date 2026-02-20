@@ -27,6 +27,8 @@ processes:
 
   openwebui:
     depends_on:
+      ensure-models:
+        condition: process_completed
       ollama:
         condition: process_healthy
     command: >
